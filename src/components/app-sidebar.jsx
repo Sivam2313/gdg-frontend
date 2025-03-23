@@ -32,6 +32,14 @@ const data = {
           title: "My appointments",
           url: "/my-appointments",
         },
+        {
+          title:"Create Appointment",
+          url:"/create-appointment"
+        },
+        {
+          title:"Appointments",
+          url:"/patient-appointments"
+        }
       ],
     },
    
