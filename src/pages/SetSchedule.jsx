@@ -26,13 +26,7 @@ export default function SetSchedule() {
   };
   return (
     <>
-      <div className="flex flex-col md:flex-row justify-center  gap-16">
-        <Calendar
-          selected={date}
-          mode="single"
-          onSelect={setDate}
-          className="border rounded-md shadow"
-        />
+      <div className="flex flex-col md:flex-row   gap-16">
         <div className="flex flex-col justify-between">
           <div>
 
@@ -59,6 +53,13 @@ export default function SetSchedule() {
 
           <Button>Confirm Availability</Button>
         </div>
+
+        <Calendar
+          selected={date}
+          mode="single"
+          onSelect={setDate}
+          className="border rounded-md shadow"
+        />
       </div>
     </>
   );

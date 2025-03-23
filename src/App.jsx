@@ -4,6 +4,7 @@ import DoctorRegistrationPage from './pages/DoctorRegistrationPage';
 import DoctorLoginPage from './pages/DoctorLoginPage';
 import DashBoardLayout from "@/components/DashBoardLayout"
 import SetSchedule from "@/pages/SetSchedule"
+import MyAppointMents from './pages/MyAppointMents';
 
 function App() {
  
@@ -15,7 +16,7 @@ function App() {
         <Route path="/doctorlogin" element={<DoctorLoginPage/>} />
         <Route  element={<DashBoardLayout />}>
           <Route path="/set-schedule" element={<SetSchedule/>} />
-          <Route path="/my-appointments" element={<SetSchedule/>} />
+          <Route path="/my-appointments" element={<MyAppointMents/>} />
         </Route>
       </Routes>
     </>
