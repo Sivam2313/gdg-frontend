@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { useRef, useState } from "react";
+import {  useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   Dialog,
   DialogClose,
@@ -11,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { getAppointment } from "@/apis/appointments";
 
 export function ConfirmationDialog({ slot = "None", children }) {
   return (
@@ -45,12 +47,47 @@ const timeSlots = [
   "03:00 PM - 04:00 PM",
 ];
 export default function SelectDoctorPage() {
+  const { id } = useParams();
   const [date, setDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState(null);
 
   const handleSlotClicked = (slot) => {
     setSelectedSlot(slot);
   };
+
+  const submitHandler = async()=>{
+      try {
+          const [startTimeStr, endTimeStr] = selectedSlot.split(" - ");
+          const startDateTime = new Date(date);
+          const endDateTime = new Date(date);
+  
+          const [startHour, startMinute, startPeriod] = startTimeStr.split(/[:\s]/);
+          const [endHour, endMinute, endPeriod] = endTimeStr.split(/[:\s]/);
+
+    
+        startDateTime.setHours(
+          parseInt(startHour) + (startPeriod === "PM" && startHour !== "12" ? 12 : 0),
+          parseInt(startMinute)
+        );
+        endDateTime.setHours(
+          parseInt(endHour) + (endPeriod === "PM" && endHour !== "12" ? 12 : 0),
+          parseInt(endMinute)
+        );
+        const startTime = startDateTime.toISOString();
+          const endTime = endDateTime.toISOString();
+          const formData = {
+              startTime,
+              endTime,
+              "doctorId": id,
+              "date": date,
+          };
+          console.log(formData)
+          const response = await getAppointment(formData);
+          console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div>
@@ -80,9 +117,9 @@ export default function SelectDoctorPage() {
             ))}
           </div>
           <div className="flex justify-end">
-            <ConfirmationDialog>
-              <Button>Confirm Availability</Button>
-            </ConfirmationDialog>
+            {/* <ConfirmationDialog > */}
+              <Button onClick={submitHandler}>Confirm Availability</Button>
+            {/* </ConfirmationDialog> */}
           </div>
         </div>
       </div>

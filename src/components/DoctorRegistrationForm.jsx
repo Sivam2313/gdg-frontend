@@ -4,11 +4,38 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react"
 
 export function DoctorRegistrationFrom({
   className,
   ...props
 }) {
+  const [name,setName] = useState();
+  const [specialization,setSpecialization] = useState();
+  const [contact,setContact] = useState();
+  const [credentials,setCredentials] = useState();
+  const [address,setAddress] = useState();
+
+  const submitHandler = (event)=>{
+      event.preventDefault();
+      const formData = {
+        name,
+        specialization,
+        contact,
+        credentials,
+        address
+      }
+      if(!name || !specialization || !contact || !credentials || !address){
+        alert("Please fill all the fields");
+        return;
+      }
+      
+      const response = doctorLogin(formData);
+
+      console.log(response);
+      
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <form>
@@ -31,25 +58,25 @@ export function DoctorRegistrationFrom({
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
               <Label htmlFor="email">Name</Label>
-              <Input id="email" type="email" placeholder="John Doe" required />
+              <Input id="email" type="email" onChange={(e)=>setName(e.target.value)} placeholder="John Doe" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Specialization</Label>
-              <Input id="email" type="email" placeholder="General Physician" required />
+              <Input id="email" type="email" onChange={(e)=>setSpecialization(e.target.value)} placeholder="General Physician" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Contact</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
-            </div>
-            <div className="grid gap-3">
-              <Label htmlFor="email">Credentials</Label>
-              <Input id="email" type="email" placeholder="FjKIL@j" required />
+              <Input id="email" type="email" onChange={(e)=>setContact(e.target.value)} placeholder="m@example.com" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Address</Label>
-              <Input id="email" type="email" placeholder="Hall 1, NIT Durgapur, west bengal" required />
+              <Input id="email" type="email" onChange={(e)=>setAddress(e.target.value)} placeholder="Hall 1, NIT Durgapur, west bengal" required />
             </div>
-            <Button type="submit" className="w-full">
+            <div className="grid gap-3">
+              <Label htmlFor="email">Password</Label>
+              <Input id="email" type="password" onChange={(e)=>setCredentials(e.target.value)} placeholder="FjKIL@j" required />
+            </div>
+            <Button type="submit" className="w-full" onClick={submitHandler}>
               Sign in as a doctor
             </Button>
           </div>

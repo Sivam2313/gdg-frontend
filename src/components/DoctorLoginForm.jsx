@@ -4,11 +4,27 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { doctorLogin } from "../apis/doctor";
+import { jwtDecode } from "jwt-decode";
 
 export function DoctorLoginForm({
   className,
   ...props
 }) {
+  const [contact,setContact] = useState();
+  const navigate = useNavigate();
+  const [credentials,setCredentials] = useState();
+  const submitHandler = async(event) => {
+    event.preventDefault();
+    const response = await doctorLogin({contact, credentials});
+    
+    localStorage.setItem('token',response.token);
+    navigate("/my-appointments");
+  };
+
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <form>
@@ -32,14 +48,14 @@ export function DoctorLoginForm({
             
             <div className="grid gap-3">
               <Label htmlFor="email">Contact</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
+              <Input id="email" type="text" onChange={(e)=>setContact(e.target.value)} placeholder="m@example.com" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Credentials</Label>
-              <Input id="email" type="email" placeholder="FjKIL@j" required />
+              <Input id="email" type="password" onChange={(e)=>setCredentials(e.target.value)} placeholder="FjKIL@j" required />
             </div>
             
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={submitHandler} >
               Log in as a doctor
             </Button>
           </div>

@@ -12,61 +12,37 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-
-const doctors = [
-  {
-    id: 1,
-    name: "Dr. John Doe",
-    specialization: "Cardiologist",
-  },
-  {
-    id: 2,
-    name: "Dr. Jane Smith",
-    specialization: "Dermatologist",
-  },
-  {
-    id: 3,
-    name: "Dr. Michael Johnson",
-    specialization: "Pediatrician",
-  },
-  {
-    id: 4,
-    name: "Dr. Sarah Williams",
-    specialization: "Orthopedic Surgeon",
-  },
-  {
-    id: 5,
-    name: "Dr. David Brown",
-    specialization: "Neurologist",
-  },
-  {
-    id: 6,
-    name: "Dr. Emily Davis",
-    specialization: "Gastroenterologist",
-  },
-  {
-    id: 7,
-    name: "Dr. Robert Wilson",
-    specialization: "Psychiatrist",
-  },
-  {
-    id: 8,
-    name: "Dr. Jennifer Taylor",
-    specialization: "Ophthalmologist",
-  },
-  {
-    id: 9,
-    name: "Dr. Christopher Anderson",
-    specialization: "Endocrinologist",
-  },
-  {
-    id: 10,
-    name: "Dr. Jessica Martinez",
-    specialization: "Urologist",
-  },
-];
+import { useEffect, useState } from "react";
+import { getAllDoctors } from "@/apis/doctor";
+import { findDoctors } from "@/apis/patient";
 
 export default function CreateAppointMentPage() {
+  const [doctors,setDoctors] = useState([])
+  const [symptoms,setSymptoms] = useState();
+  
+  async function fetch(){
+    const response = await getAllDoctors();
+    console.log(response);
+    
+    setDoctors(response);
+  }
+
+  useEffect(()=>{
+    console.log(doctors);
+    
+    if(doctors.length === 0)
+      fetch();
+  },[doctors])
+
+  const submitHandler = async ()=>{
+    const formData = {
+      "symptoms":symptoms
+    }
+    const response = await findDoctors(formData);
+    
+    setDoctors(response.recommendedDoctors)
+  }
+
   return (
     <div>
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
@@ -80,12 +56,12 @@ export default function CreateAppointMentPage() {
       <div>
         <div className="grid w-full gap-1.5">
           <Label htmlFor="message-2">Explain your symptoms</Label>
-          <Textarea placeholder="Type your message here." id="message-2" />
+          <Textarea placeholder="Type your message here." onChange={(e)=>setSymptoms(e.target.value)} id="message-2" />
           <p className="text-sm text-muted-foreground">
             Your symptoms will be used the suggest you appropriate doctors
           </p>
-          <div className="flex items-end justify-end mt-4">
-            <Button>Find Doctors</Button>
+          <div className="flex items-end justify-end mt-4 cursor">
+            <Button onClick={submitHandler}>Find Doctors</Button>
           </div>
         </div>
 

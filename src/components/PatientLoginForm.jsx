@@ -1,15 +1,37 @@
-
-import { GalleryVerticalEnd } from "lucide-react"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { GalleryVerticalEnd } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { patientLogin } from "@/apis/patient";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { jwtDecode } from "jwt-decode";
 
 export function PatientLoginForm({
   className,
   ...props
 }) {
+  const [contact,setContact] = useState();
+  const [name,setName] = useState();
+  const navigate = useNavigate();
+
+  const submitHandler = async(event) =>{
+    event.preventDefault();
+    try {
+      const formData = {
+        "name":name,
+        "phone":contact
+      }
+      const response = await patientLogin(formData);
+      localStorage.setItem('token',response.token);
+      console.log(response)
+      navigate('/patient-appointments')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <form>
@@ -29,11 +51,16 @@ export function PatientLoginForm({
           <div className="flex flex-col gap-6">
             
             <div className="grid gap-3">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" type="text" onChange={(e)=>setName(e.target.value)} placeholder="John Doe" required />
+            </div>
+
+            <div className="grid gap-3">
               <Label htmlFor="phone-number">Phone Number</Label>
-              <Input id="phone-number" type="number" placeholder="9547033470" required />
+              <Input id="phone-number" type="number" onChange={(e)=>setContact(e.target.value)} placeholder="9547033470" required />
             </div>
             
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" onClick={submitHandler}>
               Login
             </Button>
           </div>
