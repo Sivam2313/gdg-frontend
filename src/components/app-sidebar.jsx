@@ -39,6 +39,10 @@ const data = {
         {
           title:"Appointments",
           url:"/patient-appointments"
+        },
+        {
+          title:"Tickets",
+          url:'/tickets'
         }
       ],
     },
