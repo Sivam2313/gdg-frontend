@@ -11,5 +11,5 @@ export const API_ROUTES = {
     PATIENT_BEST_DOCTOR: '/patient/bestPossibleDoctors',
     PATIENT_SELECT_DOCTOR: '/patient/selectYourDoctor',
     PATIENT_APPOINTMENTS: '/patient/appointments',
-    CREATE_APPOINTMENT: '/appointment/addAppointment'
+    CREATE_APPOINTMENT: '/appointment/addAppointment',
 };

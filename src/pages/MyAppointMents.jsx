@@ -1,5 +1,5 @@
 import { getAppointment } from "@/apis/appointments";
-import { showAppointments } from "@/apis/patient";
+import { showAppointments } from "@/apis/appointments";
 import {
   Table,
   TableBody,
@@ -9,8 +9,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Badge,
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // const appointments = [
 //   {
@@ -72,14 +74,54 @@ import { useEffect, useState } from "react";
 // ];
 
 export default function MyAppointments() {
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        setLoading(true);
+        const response = await showAppointments();
+        setAppointments(response);
+      } catch (err) {
+        console.error("Failed to fetch appointments:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const [appointments, setAppointments] = useState([])
-  useEffect(()=>{
-    const response = showAppointments();
-    setAppointments(response);
-  },[])
+    fetchAppointments();
+  }, []);
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const formatAppointmentTime = (startTime, endTime) => {
+    const formatOptions = {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    };
+
+    try {
+      const start = new Date(startTime).toLocaleTimeString([], formatOptions);
+      const end = new Date(endTime).toLocaleTimeString([], formatOptions);
+
+      const [startTimeFormatted, startPeriod] = start.split(' ');
+      const [endTimeFormatted, endPeriod] = end.split(' ');
+
+      return startPeriod === endPeriod
+        ? `${startTimeFormatted} - ${endTimeFormatted} ${endPeriod}`
+        : `${start} - ${end}`;
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return 'Invalid time';
+    }
+  };
+
   return (
-    <div>
+    <div className="container mx-auto px-4 py-8">
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Your Upcoming Appointments
       </h2>
@@ -87,39 +129,62 @@ export default function MyAppointments() {
         View your scheduled appointments.
       </p>
 
-      <Table>
-        <TableCaption>A list of your upcoming appointments.</TableCaption>
-
-        {/* Table Header */}
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[200px]">Patient Name</TableHead>
-            <TableHead>Issue</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead className="text-right">Time Slot</TableHead>
-          </TableRow>
-        </TableHeader>
-
-        {/* Table Body */}
-        {
-          appointments.length === 0 && <div>No Appointments Found</div>
-        }
-        {
-          appointments.length > 0 &&
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
+      ) : (
+        <Table>
+          <TableCaption>A list of your upcoming appointments.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[200px]">Name</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Time Slot</TableHead>
+              <TableHead>Meeting Link</TableHead>
+              <TableHead className="text-right">Status</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
-            {appointments.map((appointment) => (
-              <TableRow key={appointment.id}>
-                <TableCell className="font-medium">
-                  {appointment.patientName}
+            {appointments.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-8">
+                  No appointments found
                 </TableCell>
-                <TableCell>{appointment.shortDescription}</TableCell>
-                <TableCell>{appointment.date}</TableCell>
-                <TableCell className="text-right">{appointment.slot}</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              appointments.map((appointment) => (
+                <TableRow key={appointment._id}>
+                  <TableCell className="font-medium">
+                    {localStorage.getItem('user') === 'Doctor' ?
+                      'Patient ID: ' + appointment.patientId :
+                      'Doctor ID: ' + appointment.doctorId}
+                  </TableCell>
+                  <TableCell>{formatDate(appointment.date)}</TableCell>
+                  <TableCell>
+                    {formatAppointmentTime(appointment.startTime, appointment.endTime)}
+                  </TableCell>
+                  <TableCell>
+                    <a
+                      href={appointment.meetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      Join Meeting
+                    </a>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Badge variant={appointment.status ? 'default' : 'destructive'}>
+                      {appointment.status ? 'Confirmed' : 'Cancelled'}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
-        }
-      </Table>
+        </Table>
+      )}
     </div>
   );
 }

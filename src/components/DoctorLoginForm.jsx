@@ -7,26 +7,37 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { doctorLogin } from "../apis/doctor";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast"
 import { jwtDecode } from "jwt-decode";
 
 export function DoctorLoginForm({
   className,
   ...props
 }) {
-  const [contact,setContact] = useState();
+  const [contact, setContact] = useState();
   const navigate = useNavigate();
-  const [credentials,setCredentials] = useState();
-  const submitHandler = async(event) => {
+  const [credentials, setCredentials] = useState();
+
+  const submitHandler = async (event) => {
     event.preventDefault();
-    const response = await doctorLogin({contact, credentials});
-    
-    localStorage.setItem('token',response.token);
-    navigate("/my-appointments");
+    try {
+      const response = await doctorLogin({ contact, credentials });
+      console.log(response);
+      toast.success("Doctor registered successfully!");
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", "Doctor");
+      setTimeout(() => navigate("/my-appointments"), 1000);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      toast.error("Doctor registration failed!");
+    }
   };
 
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Toaster position="top-right" reverseOrder={false} />
       <form>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
@@ -45,16 +56,16 @@ export function DoctorLoginForm({
             </div>
           </div>
           <div className="flex flex-col gap-6">
-            
+
             <div className="grid gap-3">
               <Label htmlFor="email">Contact</Label>
-              <Input id="email" type="text" onChange={(e)=>setContact(e.target.value)} placeholder="m@example.com" required />
+              <Input id="email" type="text" onChange={(e) => setContact(e.target.value)} placeholder="+91 9555555555" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Credentials</Label>
-              <Input id="email" type="password" onChange={(e)=>setCredentials(e.target.value)} placeholder="FjKIL@j" required />
+              <Input id="email" type="password" onChange={(e) => setCredentials(e.target.value)} placeholder="FjKIL@j" required />
             </div>
-            
+
             <Button type="submit" className="w-full" onClick={submitHandler} >
               Log in as a doctor
             </Button>

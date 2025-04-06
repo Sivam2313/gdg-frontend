@@ -43,17 +43,3 @@ export const patientLogin = async (formData) => {
       const data = await response.data;
       return data;
     };
-
-    export const showAppointments = async(formData) => {
-        const token = localStorage.getItem("token");
-
-        const response = await axios.get(API_ROUTES.PATIENT_APPOINTMENTS, {
-            headers: {
-            "Content-Type": "application/json",
-            Authorization : `Bearer ${token}`,
-            }
-        });
-        
-        const data = await response.data;
-        return data;
-    }

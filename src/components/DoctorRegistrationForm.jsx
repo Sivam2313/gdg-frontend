@@ -5,39 +5,47 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
+import { doctorRegistration } from "@/apis/doctor"
+import { useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 export function DoctorRegistrationFrom({
   className,
   ...props
 }) {
-  const [name,setName] = useState();
-  const [specialization,setSpecialization] = useState();
-  const [contact,setContact] = useState();
-  const [credentials,setCredentials] = useState();
-  const [address,setAddress] = useState();
+  const [name, setName] = useState();
+  const [specialization, setSpecialization] = useState();
+  const [contact, setContact] = useState();
+  const [credentials, setCredentials] = useState();
+  const [address, setAddress] = useState();
+  const navigate = useNavigate();
 
-  const submitHandler = (event)=>{
-      event.preventDefault();
-      const formData = {
-        name,
-        specialization,
-        contact,
-        credentials,
-        address
-      }
-      if(!name || !specialization || !contact || !credentials || !address){
-        alert("Please fill all the fields");
-        return;
-      }
-      
-      const response = doctorLogin(formData);
+  const submitHandler = async (event) => {
+    event.preventDefault();
 
-      console.log(response);
-      
-  }
+    if (!name || !specialization || !contact || !credentials || !address) {
+      alert("Please fill all the fields");
+      return;
+    }
+
+    const formData = { name, specialization, contact, credentials, address };
+
+    try {
+      const response = await doctorRegistration(formData);
+      toast.success("Doctor registered successfully!");
+      localStorage.setItem("token", response.token);
+      setTimeout(() => navigate("/my-appointments"), 1000);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      toast.error("Doctor registration failed!");
+    }
+  };
+
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Toaster position="top-right" reverseOrder={false} />
       <form>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">
@@ -58,30 +66,30 @@ export function DoctorRegistrationFrom({
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
               <Label htmlFor="email">Name</Label>
-              <Input id="email" type="email" onChange={(e)=>setName(e.target.value)} placeholder="John Doe" required />
+              <Input id="email" type="email" onChange={(e) => setName(e.target.value)} placeholder="John Doe" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Specialization</Label>
-              <Input id="email" type="email" onChange={(e)=>setSpecialization(e.target.value)} placeholder="General Physician" required />
+              <Input id="email" type="email" onChange={(e) => setSpecialization(e.target.value)} placeholder="General Physician" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Contact</Label>
-              <Input id="email" type="email" onChange={(e)=>setContact(e.target.value)} placeholder="m@example.com" required />
+              <Input id="email" type="email" onChange={(e) => setContact(e.target.value)} placeholder="+91 9555555555" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Address</Label>
-              <Input id="email" type="email" onChange={(e)=>setAddress(e.target.value)} placeholder="Hall 1, NIT Durgapur, west bengal" required />
+              <Input id="email" type="email" onChange={(e) => setAddress(e.target.value)} placeholder="Hall 1, NIT Durgapur, west bengal" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="email">Password</Label>
-              <Input id="email" type="password" onChange={(e)=>setCredentials(e.target.value)} placeholder="FjKIL@j" required />
+              <Input id="email" type="password" onChange={(e) => setCredentials(e.target.value)} placeholder="FjKIL@j" required />
             </div>
             <Button type="submit" className="w-full" onClick={submitHandler}>
               Sign in as a doctor
             </Button>
           </div>
-         
-         
+
+
         </div>
       </form>
       <div

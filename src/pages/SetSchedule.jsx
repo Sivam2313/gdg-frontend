@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { useEffect, useState } from "react";
+import { getDoctorsAvailability } from "@/apis/doctor";
 
 const timeSlots = [
   "09:00 AM - 10:00 AM",
@@ -14,22 +15,32 @@ const timeSlots = [
 export default function SetSchedule() {
   const [date, setDate] = useState(new Date());
   const [selectedSlots, setSelectedSlots] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
 
   const handleSlotClicked = (slot) => {
-    setSelectedSlots((prev) => {
-      if (prev.includes(slot)) {
-        return prev.filter((s) => s !== slot);
-      } else {
-        return [...prev, slot];
-      }
-    });
+    setSelectedSlots((prev) =>
+      prev.includes(slot)
+        ? prev.filter((s) => s !== slot)
+        : [...prev, slot]
+    );
   };
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (date) {
+        const slots = await getDoctorsAvailability(date);
+        if (slots) {
+          setAvailableSlots(slots);
+        }
+      }
+    };
+  
+    fetchSlots();
+  }, [date]);
+  console.log(availableSlots);
   return (
-    <>
-      <div className="flex flex-col md:flex-row   gap-16">
-        <div className="flex flex-col justify-between">
-          <div>
-
+    <div className="flex flex-col md:flex-row gap-16">
+      <div className="flex flex-col justify-between gap-6">
+        <div>
           <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
             Set Your Availability
           </h2>
@@ -37,30 +48,34 @@ export default function SetSchedule() {
             Select the time slots when you are available. You can choose
             multiple slots.
           </p>
+        </div>
 
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            {timeSlots.map((slot, index) => (
+        <div className="grid grid-cols-2 gap-4">
+          {timeSlots.map((slot, index) => {
+            const isAvailable = availableSlots.includes(slot);
+            const isSelected = selectedSlots.includes(slot);
+
+            return (
               <Button
                 key={index}
-                variant={selectedSlots.includes(slot) ? "default" : "secondary"}
+                variant={isSelected ? "default" : isAvailable ? "default" : "outline"}
                 onClick={() => handleSlotClicked(slot)}
               >
                 {slot}
               </Button>
-            ))}
-          </div>
-
-          <Button>Confirm Availability</Button>
+            );
+          })}
         </div>
 
-        <Calendar
-          selected={date}
-          mode="single"
-          onSelect={setDate}
-          className="border rounded-md shadow"
-        />
+        <Button>Confirm Availability</Button>
       </div>
-    </>
+
+      <Calendar
+        selected={date}
+        mode="single"
+        onSelect={setDate}
+        className="border rounded-md shadow"
+      />
+    </div>
   );
 }
