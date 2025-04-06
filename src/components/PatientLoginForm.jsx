@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { jwtDecode } from "jwt-decode";
 
 export function PatientLoginForm({
@@ -24,16 +26,19 @@ export function PatientLoginForm({
         "phone":contact
       }
       const response = await patientLogin(formData);
+      toast.success("Patient Logged In successfully!");
       localStorage.setItem('token',response.token);
-      console.log(response)
-      navigate('/patient-appointments')
+      localStorage.setItem("user", "Patient");
+      setTimeout(() => navigate("/my-appointments"), 1000);
     } catch (error) {
-      console.log(error)
+      console.error("Login failed:", error);
+      toast.error("Patient LogIn failed!");
     }
   }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <Toaster position="top-right" reverseOrder={false} />
       <form>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2">

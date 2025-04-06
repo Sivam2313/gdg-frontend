@@ -24,13 +24,13 @@ export function DoctorLoginForm({
     try {
       const response = await doctorLogin({ contact, credentials });
       console.log(response);
-      toast.success("Doctor registered successfully!");
+      toast.success("Doctor Logged In successfully!");
       localStorage.setItem("token", response.token);
       localStorage.setItem("user", "Doctor");
       setTimeout(() => navigate("/my-appointments"), 1000);
     } catch (error) {
       console.error("Registration failed:", error);
-      toast.error("Doctor registration failed!");
+      toast.error("Doctor LogIn failed!");
     }
   };
 

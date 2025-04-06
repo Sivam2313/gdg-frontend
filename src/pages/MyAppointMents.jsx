@@ -101,7 +101,8 @@ export default function MyAppointments() {
     const formatOptions = {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: 'UTC'
     };
 
     try {
@@ -157,8 +158,8 @@ export default function MyAppointments() {
                 <TableRow key={appointment._id}>
                   <TableCell className="font-medium">
                     {localStorage.getItem('user') === 'Doctor' ?
-                      'Patient ID: ' + appointment.patientId :
-                      'Doctor ID: ' + appointment.doctorId}
+                      `Patient ID:  ${appointment.patientId._id}` :
+                      `Doctor ID: ${appointment.doctorId._id}`}
                   </TableCell>
                   <TableCell>{formatDate(appointment.date)}</TableCell>
                   <TableCell>

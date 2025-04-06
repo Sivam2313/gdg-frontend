@@ -1,7 +1,7 @@
-import * as React from "react"
-
-import { SearchForm } from "@/components/search-form"
-import { VersionSwitcher } from "@/components/version-switcher"
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { SearchForm } from "@/components/search-form";
+import { VersionSwitcher } from "@/components/version-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -13,62 +13,53 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { Link } from "react-router-dom"
+} from "@/components/ui/sidebar";
+import { Link } from "react-router-dom";
 
-// This is sample data.
-const data = {
-  versions: ["1.0.0"],
-  navMain: [
+export function AppSidebar(props) {
+  const [userType, setUserType] = useState(localStorage.getItem("user"));
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUserType(localStorage.getItem("user"));
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  const navItems = [
     {
       title: "Getting Started",
       url: "#",
       items: [
-        {
-          title: "Set Schedule",
-          url: "/set-schedule",
-        },
-        {
-          title: "My appointments",
-          url: "/my-appointments",
-        },
-        {
-          title:"Create Appointment",
-          url:"/create-appointment"
-        },
-        {
-          title:"Appointments",
-          url:"/patient-appointments"
-        },
-        {
-          title:"Tickets",
-          url:'/tickets'
-        }
+        ...(userType === "Doctor"
+          ? [{ title: "Set Schedule", url: "/set-schedule" }]
+          : []),
+        { title: "My appointments", url: "/my-appointments" },
+        { title: "Create Appointment", url: "/create-appointment" },
+        ...(userType === "Doctor"
+          ? [{ title: "Tickets", url: "/tickets" }]
+          : []),
       ],
     },
-   
-  ],
-}
+  ];
 
-export function AppSidebar({
-  ...props
-}) {
   return (
     <Sidebar {...props}>
       <SidebarHeader>
-        <VersionSwitcher versions={data.versions} defaultVersion={data.versions[0]} />
-        {/* <SearchForm /> */}
+        <VersionSwitcher versions={["1.0.0"]} defaultVersion="1.0.0" />
       </SidebarHeader>
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
+        {navItems.map((item) => (
           <SidebarGroup key={item.title}>
             <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
+                    <SidebarMenuButton asChild>
                       <Link to={item.url}>{item.title}</Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
