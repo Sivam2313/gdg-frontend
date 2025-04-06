@@ -57,7 +57,7 @@ export function PatientLoginForm({
 
             <div className="grid gap-3">
               <Label htmlFor="phone-number">Phone Number</Label>
-              <Input id="phone-number" type="number" onChange={(e)=>setContact(e.target.value)} placeholder="9547033470" required />
+              <Input id="phone-number" type="text" onChange={(e)=>setContact(e.target.value)} placeholder="9547033470" required />
             </div>
             
             <Button type="submit" className="w-full" onClick={submitHandler}>

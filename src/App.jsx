@@ -9,6 +9,7 @@ import PatientLoginPage from './pages/PatientLoginPage';
 import CreateAppointMentPage from './pages/CreateAppointmentPage';
 import SelectDoctorPage from './pages/SelectDoctorPage';
 import PatientAppointment from './pages/PatientAppointments';
+import TicketsPage from "./pages/TicketsPage"
 
 function App() {
  
@@ -25,6 +26,7 @@ function App() {
           <Route path="/create-appointment" element={<CreateAppointMentPage/>}/>
           <Route path="/patient-appointments" element={<PatientAppointment/>}/>
           <Route path="/create-appointment/:id" element={<SelectDoctorPage/>}/>
+          <Route path="/tickets" element={<TicketsPage/>} />
         </Route>
       </Routes>
     </>

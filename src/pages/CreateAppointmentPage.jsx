@@ -84,7 +84,7 @@ export default function CreateAppointMentPage() {
                 <TableCell className="font-medium">{doctor.name}</TableCell>
                 <TableCell>{doctor.specialization}</TableCell>
                 <TableCell className="text-right">
-                  <Link to={`/create-appointment/${doctor.id}`}>
+                  <Link to={`/create-appointment/${doctor._id}`}>
                     <Button variant="link">Book Appointment</Button>
                   </Link>
                 </TableCell>
